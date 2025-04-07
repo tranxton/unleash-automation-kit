@@ -11,7 +11,7 @@ type featuresResponse struct {
 }
 
 func (unleash *Unleash) GetStaleFeatures() ([]Feature, error) {
-	url := fmt.Sprintf(searchFeatureURL, unleash.Config.baseURL, "state=IS:stale")
+	url := fmt.Sprintf(getStaleFeaturesURL, unleash.Config.baseURL, unleash.Config.projectName)
 
 	responseBody, err := unleash.doRequest("GET", url, nil)
 	if err != nil {

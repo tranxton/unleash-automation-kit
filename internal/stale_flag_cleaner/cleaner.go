@@ -28,6 +28,12 @@ func (cleaner *Cleaner) CleanUpStaleFlags() {
 		log.Fatalf("Failed to fetch stale feature flags: %v", err)
 	}
 
+	if len(features) == 0 {
+		log.Println("No stale flags found")
+
+		return
+	}
+
 	for _, feature := range features {
 		task, err := cleaner.createTaskForFeature(&feature)
 

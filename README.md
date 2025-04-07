@@ -24,7 +24,6 @@ Unleash Automation Kit is a collection of tools designed to automate operational
 `stale-flag-cleaner` scans all stale flags in Unleash and automatically:
 
 - Creates a ticket in your issue tracker (e.g., Jira)
-- Assigns it to the team from the feature tag
 - Tags the feature to prevent duplicate ticket creation
 
 This tool is designed to be **idempotent** and safe for scheduled execution (e.g., via cron).

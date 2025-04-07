@@ -34,8 +34,9 @@ func loadConfigFromEnv() *config {
 		TaskNameTemplate:        os.Getenv("TASK_NAME_TEMPLATE"),
 		TaskDescriptionTemplate: os.Getenv("TASK_DESCRIPTION_TEMPLATE"),
 
-		UnleashBaseURL:  os.Getenv("UNLEASH_BASE_URL"),
-		UnleashApiToken: os.Getenv("UNLEASH_PERSONAL_API_TOKEN"),
+		UnleashBaseURL:     os.Getenv("UNLEASH_BASE_URL"),
+		UnleashProjectName: os.Getenv("UNLEASH_PROJECT_NAME"),
+		UnleashApiToken:    os.Getenv("UNLEASH_PERSONAL_API_TOKEN"),
 
 		JiraBaseURL:      os.Getenv("JIRA_BASE_URL"),
 		JiraProjectKey:   os.Getenv("JIRA_PROJECT_KEY"),
@@ -56,6 +57,7 @@ func initCleaner(config *config) *stale_flag_cleaner.Cleaner {
 		unleash.NewUnleash(
 			unleash.NewConfig(
 				config.UnleashBaseURL,
+				config.UnleashProjectName,
 				config.UnleashApiToken,
 			),
 		),
