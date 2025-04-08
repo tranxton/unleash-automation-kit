@@ -18,8 +18,8 @@ func NewUnleash(config *Config) *Unleash {
 	}
 }
 
-func (unleash *Unleash) doRequest(method, url string, requestBody io.Reader) ([]byte, error) {
-	req, err := http.NewRequest(method, url, requestBody)
+func (unleash *Unleash) doRequest(method, URL string, requestBody io.Reader) ([]byte, error) {
+	req, err := http.NewRequest(method, URL, requestBody)
 	if err != nil {
 		return nil, err
 	}

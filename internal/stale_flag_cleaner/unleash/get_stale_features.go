@@ -3,7 +3,6 @@ package unleash
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 )
 
 type featuresResponse struct {
@@ -11,9 +10,9 @@ type featuresResponse struct {
 }
 
 func (unleash *Unleash) GetStaleFeatures() ([]Feature, error) {
-	url := fmt.Sprintf(getStaleFeaturesURL, unleash.Config.baseURL, unleash.Config.projectName)
+	URL, _ := getStaleFeaturesURL(unleash.Config.baseURL, unleash.Config.projectName)
 
-	responseBody, err := unleash.doRequest("GET", url, nil)
+	responseBody, err := unleash.doRequest("GET", URL.String(), nil)
 	if err != nil {
 		return nil, err
 	}

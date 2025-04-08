@@ -1,7 +1,5 @@
 package unleash
 
-import "fmt"
-
 type Feature struct {
 	Name    string `json:"name"`
 	Project string `json:"project"`
@@ -11,7 +9,9 @@ type Feature struct {
 }
 
 func (feature *Feature) setUrl(baseURL string) {
-	feature.URL = fmt.Sprintf(featureURL, baseURL, feature.Project, feature.Name)
+	URL, _ := getFeatureURL(baseURL, feature.Project, feature.Name)
+
+	feature.URL = URL.String()
 }
 
 func (feature *Feature) IsTaskCreated() bool {

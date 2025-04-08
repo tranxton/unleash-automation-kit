@@ -19,8 +19,8 @@ func NewJira(config *Config) *Jira {
 	}
 }
 
-func (jira *Jira) doRequest(method, url string, requestBody io.Reader) ([]byte, error) {
-	req, err := http.NewRequest(method, url, requestBody)
+func (jira *Jira) doRequest(method, URL string, requestBody io.Reader) ([]byte, error) {
+	req, err := http.NewRequest(method, URL, requestBody)
 	if err != nil {
 		return nil, err
 	}
