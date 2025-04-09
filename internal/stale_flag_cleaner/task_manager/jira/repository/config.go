@@ -1,4 +1,4 @@
-package jira_client
+package repository
 
 type Config struct {
 	baseURL      string

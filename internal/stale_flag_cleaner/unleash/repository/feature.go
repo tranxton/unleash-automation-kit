@@ -1,4 +1,4 @@
-package unleash
+package repository
 
 type Feature struct {
 	Name    string `json:"name"`

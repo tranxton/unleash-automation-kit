@@ -1,47 +1,22 @@
 package unleash
 
 import (
-	"fmt"
-	"io"
-	"net/http"
+	"unleash-automation-kit/internal/stale_flag_cleaner/unleash/repository"
 )
 
 type Unleash struct {
-	Config *Config
-	Client *http.Client
+	repository *repository.Repository
 }
 
-func NewUnleash(config *Config) *Unleash {
+func NewUnleash(repository *repository.Repository) *Unleash {
 	return &Unleash{
-		Config: config,
-		Client: http.DefaultClient,
+		repository: repository,
 	}
 }
+func (unleash *Unleash) MarkTaskCreated(feature *repository.Feature, taskID string) error {
+	return unleash.repository.AddTagToFeature(feature, repository.NewTag("deleteTaskCreated", taskID))
+}
 
-func (unleash *Unleash) doRequest(method, URL string, requestBody io.Reader) ([]byte, error) {
-	req, err := http.NewRequest(method, URL, requestBody)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", unleash.Config.personalAPIToken))
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := unleash.Client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode >= http.StatusBadRequest {
-		return nil, fmt.Errorf("request execution error: %s, %s", resp.Status, responseBody)
-	}
-
-	return responseBody, nil
+func (unleash *Unleash) GetStaleFeatures() ([]repository.Feature, error) {
+	return unleash.repository.SearchStaleFeatures()
 }

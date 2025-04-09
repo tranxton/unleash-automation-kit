@@ -1,12 +1,6 @@
-package jira_client
+package repository
 
-import (
-	"bytes"
-	"encoding/json"
-	"unleash-automation-kit/internal/stale_flag_cleaner/task_manager"
-)
-
-type createIssuePayload struct {
+type CreateIssueRequest struct {
 	Fields issueFields `json:"fields"`
 }
 
@@ -41,29 +35,11 @@ type textFragment struct {
 	Text string `json:"text"`
 }
 
-func (jira *Jira) CreateTask(name, description string) (task_manager.Task, error) {
-	task := jira.newCreateIssuePayload(name, description)
-	body, _ := json.Marshal(task)
-	URL, _ := createIssueURL(jira.config.baseURL)
-
-	responseBody, err := jira.doRequest("POST", URL.String(), bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	var issue Issue
-	if err := json.Unmarshal(responseBody, &issue); err != nil {
-		return nil, err
-	}
-
-	return &issue, nil
-}
-
-func (jira *Jira) newCreateIssuePayload(summary, descriptionContent string) *createIssuePayload {
-	return &createIssuePayload{
+func (repository *Repository) NewCreateIssueRequest(summary, descriptionContent string) *CreateIssueRequest {
+	return &CreateIssueRequest{
 		Fields: issueFields{
 			Project: project{
-				Key: jira.config.projectKey,
+				Key: repository.config.projectKey,
 			},
 			Summary: summary,
 			Description: description{
@@ -82,7 +58,7 @@ func (jira *Jira) newCreateIssuePayload(summary, descriptionContent string) *cre
 				},
 			},
 			IssueType: issueType{
-				ID: jira.config.issueTypeID,
+				ID: repository.config.issueTypeID,
 			},
 		},
 	}

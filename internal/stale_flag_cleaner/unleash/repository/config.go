@@ -1,4 +1,4 @@
-package unleash
+package repository
 
 type Config struct {
 	baseURL          string

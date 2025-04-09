@@ -1,4 +1,4 @@
-package unleash
+package repository
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ func getFeatureURL(baseURL, project, feature string) (*url.URL, error) {
 	return u, nil
 }
 
-func getStaleFeaturesURL(baseURL, project string) (*url.URL, error) {
+func searchStaleFeaturesURL(baseURL, project string) (*url.URL, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func getStaleFeaturesURL(baseURL, project string) (*url.URL, error) {
 	return u, nil
 }
 
-func addFeatureTagURL(baseURL, feature string) (*url.URL, error) {
+func addTagToFeatureURL(baseURL, feature string) (*url.URL, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err

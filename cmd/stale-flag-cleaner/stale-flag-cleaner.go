@@ -6,8 +6,10 @@ import (
 	"log"
 	"os"
 	"unleash-automation-kit/internal/stale_flag_cleaner"
-	"unleash-automation-kit/internal/stale_flag_cleaner/task_manager/jira_client"
+	"unleash-automation-kit/internal/stale_flag_cleaner/task_manager/jira"
+	jiraRepository "unleash-automation-kit/internal/stale_flag_cleaner/task_manager/jira/repository"
 	"unleash-automation-kit/internal/stale_flag_cleaner/unleash"
+	unleashRepository "unleash-automation-kit/internal/stale_flag_cleaner/unleash/repository"
 )
 
 func main() {
@@ -55,14 +57,16 @@ func validateConfig(config *config) error {
 func initCleaner(config *config) *stale_flag_cleaner.Cleaner {
 	return stale_flag_cleaner.NewCleaner(
 		unleash.NewUnleash(
-			unleash.NewConfig(
-				config.UnleashBaseURL,
-				config.UnleashProjectName,
-				config.UnleashApiToken,
+			unleashRepository.NewRepository(
+				unleashRepository.NewConfig(
+					config.UnleashBaseURL,
+					config.UnleashProjectName,
+					config.UnleashApiToken,
+				),
 			),
 		),
-		jira_client.NewJira(
-			jira_client.NewConfig(
+		jira.NewJira(
+			jiraRepository.NewConfig(
 				config.JiraBaseURL,
 				config.JiraProjectKey,
 				config.JiraIssueTypeID,
