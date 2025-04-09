@@ -28,10 +28,6 @@ Unleash Automation Kit is a collection of tools designed to automate operational
 
 This tool is designed to be **idempotent** and safe for scheduled execution (e.g., via cron).
 
-> ⚠️ **Warning:**  
-> If the script crashes after creating a task but before adding the tag, rerunning it may result in duplicate tickets for the same feature flag.
-> This limitation may be addressed in a future version with improved atomicity.
-
 ### Environment Setup
 
 Copy the example environment file and configure the required values:
