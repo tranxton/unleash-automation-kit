@@ -5,6 +5,7 @@ import (
 	"log"
 	"unleash-automation-kit/internal/stale_flag_cleaner/task_manager"
 	"unleash-automation-kit/internal/stale_flag_cleaner/unleash"
+	"unleash-automation-kit/internal/stale_flag_cleaner/unleash/repository"
 )
 
 type Cleaner struct {
@@ -35,33 +36,45 @@ func (cleaner *Cleaner) CleanUpStaleFlags() {
 	}
 
 	for _, feature := range features {
-		task, err := cleaner.createTaskForFeature(&feature)
+		message, err := cleaner.createTaskForFeature(&feature)
 
 		if err != nil {
-			log.Printf("Failed to create task for feature %q: %v", feature.Name, err)
+			log.Printf("[Feature %s] Failed to create task for: %v", feature.Name, err)
 
 			continue
 		}
 
-		log.Printf("Successfully created task %s for feature %q", feature.Name, task.GetKey())
+		log.Println(message)
 	}
 }
 
-func (cleaner *Cleaner) createTaskForFeature(feature *unleash.Feature) (task_manager.Task, error) {
+func (cleaner *Cleaner) createTaskForFeature(feature *repository.Feature) (string, error) {
 	if feature.IsTaskCreated() {
-		return nil, fmt.Errorf("task already exist")
+		return fmt.Sprintf("[Feature %q] Task already exists", feature.Name), nil
 	}
 
 	name := fmt.Sprintf(cleaner.template.taskName, feature.Name)
 	description := fmt.Sprintf(cleaner.template.taskDescription, feature.URL)
-	task, err := cleaner.taskManager.CreateTask(name, description)
+
+	task, err := cleaner.taskManager.FindTask(name)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create task: %v", err)
+		return "", fmt.Errorf("failed to find task: %v", err)
+	}
+
+	var message string
+	if task == nil {
+		task, err = cleaner.taskManager.CreateTask(name, description)
+		if err != nil {
+			return "", fmt.Errorf("failed to create task: %v", err)
+		}
+		message = fmt.Sprintf("[Feature %s] Successfully created task %s", feature.Name, task.GetKey())
+	} else {
+		message = fmt.Sprintf("[Feature %s] Task already exists, adding tag to feature", feature.Name)
 	}
 
 	if err := cleaner.unleash.MarkTaskCreated(feature, task.GetKey()); err != nil {
-		return nil, fmt.Errorf("failed to tag feature: %v", err)
+		return "", fmt.Errorf("failed to tag feature: %v", err)
 	}
 
-	return task, nil
+	return message, nil
 }
