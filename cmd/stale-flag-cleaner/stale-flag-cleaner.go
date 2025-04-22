@@ -6,10 +6,6 @@ import (
 	"log"
 	"os"
 	"unleash-automation-kit/internal/stale_flag_cleaner"
-	"unleash-automation-kit/internal/stale_flag_cleaner/task_manager/jira"
-	jiraRepository "unleash-automation-kit/internal/stale_flag_cleaner/task_manager/jira/repository"
-	"unleash-automation-kit/internal/stale_flag_cleaner/unleash"
-	unleashRepository "unleash-automation-kit/internal/stale_flag_cleaner/unleash/repository"
 )
 
 func main() {
@@ -20,7 +16,7 @@ func main() {
 		log.Fatalf("Invalid .env: %v", err)
 	}
 
-	cleaner := initCleaner(config)
+	cleaner := stale_flag_cleaner.NewCleaner(config)
 	cleaner.CleanUpStaleFlags()
 }
 
@@ -31,8 +27,8 @@ func loadEnv() {
 	}
 }
 
-func loadConfigFromEnv() *config {
-	return &config{
+func loadConfigFromEnv() *stale_flag_cleaner.Config {
+	return &stale_flag_cleaner.Config{
 		TaskNameTemplate:        os.Getenv("TASK_NAME_TEMPLATE"),
 		TaskDescriptionTemplate: os.Getenv("TASK_DESCRIPTION_TEMPLATE"),
 
@@ -48,35 +44,8 @@ func loadConfigFromEnv() *config {
 	}
 }
 
-func validateConfig(config *config) error {
+func validateConfig(config *stale_flag_cleaner.Config) error {
 	validate := validator.New()
 
 	return validate.Struct(config)
-}
-
-func initCleaner(config *config) *stale_flag_cleaner.Cleaner {
-	return stale_flag_cleaner.NewCleaner(
-		unleash.NewUnleash(
-			unleashRepository.NewRepository(
-				unleashRepository.NewConfig(
-					config.UnleashBaseURL,
-					config.UnleashProjectName,
-					config.UnleashApiToken,
-				),
-			),
-		),
-		jira.NewJira(
-			jiraRepository.NewConfig(
-				config.JiraBaseURL,
-				config.JiraProjectKey,
-				config.JiraIssueTypeID,
-				config.JiraUserEmail,
-				config.JiraUserApiToken,
-			),
-		),
-		stale_flag_cleaner.NewTemplate(
-			config.TaskNameTemplate,
-			config.TaskDescriptionTemplate,
-		),
-	)
 }

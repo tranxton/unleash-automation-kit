@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"log"
 	"unleash-automation-kit/internal/stale_flag_cleaner/task_manager"
+	"unleash-automation-kit/internal/stale_flag_cleaner/task_manager/jira"
+	jiraRepository "unleash-automation-kit/internal/stale_flag_cleaner/task_manager/jira/repository"
 	"unleash-automation-kit/internal/stale_flag_cleaner/unleash"
 	"unleash-automation-kit/internal/stale_flag_cleaner/unleash/repository"
+	unleashRepository "unleash-automation-kit/internal/stale_flag_cleaner/unleash/repository"
 )
 
 type Cleaner struct {
@@ -14,11 +17,30 @@ type Cleaner struct {
 	template    *Template
 }
 
-func NewCleaner(unleash *unleash.Unleash, task task_manager.TaskManager, template *Template) *Cleaner {
+func NewCleaner(config *Config) *Cleaner {
 	return &Cleaner{
-		unleash:     unleash,
-		taskManager: task,
-		template:    template,
+		unleash: unleash.NewUnleash(
+			unleashRepository.NewRepository(
+				unleashRepository.NewConfig(
+					config.UnleashBaseURL,
+					config.UnleashProjectName,
+					config.UnleashApiToken,
+				),
+			),
+		),
+		taskManager: jira.NewJira(
+			jiraRepository.NewConfig(
+				config.JiraBaseURL,
+				config.JiraProjectKey,
+				config.JiraIssueTypeID,
+				config.JiraUserEmail,
+				config.JiraUserApiToken,
+			),
+		),
+		template: NewTemplate(
+			config.TaskNameTemplate,
+			config.TaskDescriptionTemplate,
+		),
 	}
 }
 

@@ -1,6 +1,6 @@
-package main
+package stale_flag_cleaner
 
-type config struct {
+type Config struct {
 	TaskNameTemplate        string `validate:"required"`
 	TaskDescriptionTemplate string `validate:"required"`
 
